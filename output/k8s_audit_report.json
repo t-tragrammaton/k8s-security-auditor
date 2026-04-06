@@ -1,0 +1,189 @@
+{
+    "audit_timestamp": "2026-04-06 22:13:10 UTC",
+    "total_findings": 17,
+    "resources": [
+        {
+            "resource_id": "production/frontend-pod",
+            "resource_name": "frontend-pod",
+            "resource_type": "Pod",
+            "total_risk_score": 330,
+            "highest_severity": "HIGH",
+            "findings": [
+                {
+                    "issue": "Pod uses default service account",
+                    "severity": "MEDIUM",
+                    "risk_score": 50,
+                    "recommendation": "Create a dedicated service account per workload with minimal RBAC permissions"
+                },
+                {
+                    "issue": "Container runs as root",
+                    "severity": "HIGH",
+                    "risk_score": 80,
+                    "recommendation": "Set runAsNonRoot: true and specify a non-zero runAsUser in securityContext"
+                },
+                {
+                    "issue": "Container allows privilege escalation",
+                    "severity": "HIGH",
+                    "risk_score": 75,
+                    "recommendation": "Set allowPrivilegeEscalation: false in securityContext"
+                },
+                {
+                    "issue": "Container has writable root filesystem",
+                    "severity": "MEDIUM",
+                    "risk_score": 45,
+                    "recommendation": "Set readOnlyRootFilesystem: true \u2014 use emptyDir volumes for writable paths"
+                },
+                {
+                    "issue": "Container has no resource limits",
+                    "severity": "MEDIUM",
+                    "risk_score": 40,
+                    "recommendation": "Set CPU and memory limits to prevent resource exhaustion attacks"
+                },
+                {
+                    "issue": "Container uses unversioned image tag: nginx:latest",
+                    "severity": "MEDIUM",
+                    "risk_score": 40,
+                    "recommendation": "Pin image to a specific digest or version tag for reproducible deployments"
+                }
+            ]
+        },
+        {
+            "resource_id": "production/backend-pod",
+            "resource_name": "backend-pod",
+            "resource_type": "Pod",
+            "total_risk_score": 195,
+            "highest_severity": "CRITICAL",
+            "findings": [
+                {
+                    "issue": "Pod has hostNetwork access \u2014 shares host network namespace",
+                    "severity": "CRITICAL",
+                    "risk_score": 95,
+                    "recommendation": "Remove hostNetwork: true unless absolutely required. Use a NetworkPolicy instead"
+                },
+                {
+                    "issue": "Container is running in privileged mode",
+                    "severity": "CRITICAL",
+                    "risk_score": 100,
+                    "recommendation": "Remove privileged: true \u2014 privileged containers can escape to the host"
+                }
+            ]
+        },
+        {
+            "resource_id": "admin-binding",
+            "resource_name": "admin-binding",
+            "resource_type": "RBACBinding",
+            "total_risk_score": 185,
+            "highest_severity": "CRITICAL",
+            "findings": [
+                {
+                    "issue": "cluster-admin role bound to ['default']",
+                    "severity": "CRITICAL",
+                    "risk_score": 100,
+                    "recommendation": "Remove cluster-admin bindings. Use namespace-scoped roles with minimal permissions"
+                },
+                {
+                    "issue": "Default service account bound to elevated role 'cluster-admin'",
+                    "severity": "HIGH",
+                    "risk_score": 85,
+                    "recommendation": "Never bind elevated roles to the default service account"
+                }
+            ]
+        },
+        {
+            "resource_id": "default",
+            "resource_name": "default",
+            "resource_type": "Namespace",
+            "total_risk_score": 105,
+            "highest_severity": "HIGH",
+            "findings": [
+                {
+                    "issue": "Namespace has no NetworkPolicy \u2014 all pod-to-pod traffic is allowed",
+                    "severity": "HIGH",
+                    "risk_score": 80,
+                    "recommendation": "Apply a default-deny NetworkPolicy and explicitly allow required traffic"
+                },
+                {
+                    "issue": "Namespace has no ResourceQuota",
+                    "severity": "LOW",
+                    "risk_score": 25,
+                    "recommendation": "Set ResourceQuota to prevent resource exhaustion from misconfigured workloads"
+                }
+            ]
+        },
+        {
+            "resource_id": "wildcard-binding",
+            "resource_name": "wildcard-binding",
+            "resource_type": "RBACBinding",
+            "total_risk_score": 95,
+            "highest_severity": "CRITICAL",
+            "findings": [
+                {
+                    "issue": "RBAC role has wildcard * verbs and resources",
+                    "severity": "CRITICAL",
+                    "risk_score": 95,
+                    "recommendation": "Replace wildcard rules with specific verbs and resources"
+                }
+            ]
+        },
+        {
+            "resource_id": "monitoring",
+            "resource_name": "monitoring",
+            "resource_type": "Namespace",
+            "total_risk_score": 80,
+            "highest_severity": "HIGH",
+            "findings": [
+                {
+                    "issue": "Namespace has no NetworkPolicy \u2014 all pod-to-pod traffic is allowed",
+                    "severity": "HIGH",
+                    "risk_score": 80,
+                    "recommendation": "Apply a default-deny NetworkPolicy and explicitly allow required traffic"
+                }
+            ]
+        },
+        {
+            "resource_id": "production/db-credentials",
+            "resource_name": "db-credentials",
+            "resource_type": "Secret",
+            "total_risk_score": 75,
+            "highest_severity": "HIGH",
+            "findings": [
+                {
+                    "issue": "Secret is not encrypted at rest",
+                    "severity": "HIGH",
+                    "risk_score": 75,
+                    "recommendation": "Enable etcd encryption at rest or use an external secrets manager like AWS Secrets Manager or HashiCorp Vault"
+                }
+            ]
+        },
+        {
+            "resource_id": "production/api-key",
+            "resource_name": "api-key",
+            "resource_type": "Secret",
+            "total_risk_score": 75,
+            "highest_severity": "HIGH",
+            "findings": [
+                {
+                    "issue": "Secret is not encrypted at rest",
+                    "severity": "HIGH",
+                    "risk_score": 75,
+                    "recommendation": "Enable etcd encryption at rest or use an external secrets manager like AWS Secrets Manager or HashiCorp Vault"
+                }
+            ]
+        },
+        {
+            "resource_id": "production",
+            "resource_name": "production",
+            "resource_type": "Namespace",
+            "total_risk_score": 25,
+            "highest_severity": "LOW",
+            "findings": [
+                {
+                    "issue": "Namespace has no ResourceQuota",
+                    "severity": "LOW",
+                    "risk_score": 25,
+                    "recommendation": "Set ResourceQuota to prevent resource exhaustion from misconfigured workloads"
+                }
+            ]
+        }
+    ]
+}
